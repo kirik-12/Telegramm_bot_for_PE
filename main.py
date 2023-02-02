@@ -17,9 +17,10 @@ def start(message):
 @bot.message_handler(content_types=['text'])
 def func(message):
     if(message.text == "Game 1"):
-        bot.send_message(message.chat.id, text="Твой выбор сделан... ДА Начнётся игра!!!")
+        bot.send_message(message.chat.id, text = "Твой выбор сделан... ДА Начнётся игра!!!")
         bot.send_photo(message.shat.id, ft.map_photo)
-    elif
+    elif message.text == 'Game 2':
+        bot.send_message(message.chat.id, text = 'Увы, игра ещё не готова')
    '''     
     elif(message.text == "❓ Задать вопрос"):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
