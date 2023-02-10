@@ -1,92 +1,128 @@
-import telebot
+import telebot 
 from telebot import types
+from telebot import custom_filters
+from telebot.handler_backends import State, StatesGroup #States
+from telebot.storage import StateMemoryStorage
 import foto as ft
 import random
 
+# Now, you can pass storage to bot.
+state_storage = StateMemoryStorage() # you can init here another storage
+bot = telebot.TeleBot("6072418722:AAFkuqO-wt9XlzF9_Z1btbAnIczV2Jx8Eyo",
+state_storage=state_storage)
 
-API_TOKEN = '6072418722:AAFkuqO-wt9XlzF9_Z1btbAnIczV2Jx8Eyo'
+# States group.
+class Question(StatesGroup):
+    que_1 = State()
+    que_2 = State()
+    que_3 = State()
+    que_4 = State()
+    que_5 = State()
+    que_6 = State()
+    que_7 = State()
+    que_8 = State()
+    que_9 = State()
+    que_10 = State()
+    que_11 = State()
+    que_12 = State()
+    que_13 = State()
+    que_14 = State()
+    que_15 = State()
 
-bot = telebot.TeleBot(API_TOKEN)
-
-user_dict = {}
-
-question = ft.all_photos
-random.shuffle(question)
-n = 3 # количество вопросов
-question = question[0:n] # теперь у нас целых 5 вопросов
-
-class User:
-    def __init__(self, *answers):
-        self.answers = answers
-        self.user_id = None
-        self.try_today = None
-
-    def append_answers(self, next_answer):
-        all_answers = list(self.answers)
-        all_answers.append(next_answer)
-        self.answers = all_answers
-
-        
-
+# Здароваемся с нашей жертвой/ Даём кнопки 5,10,15 вопросов
 @bot.message_handler(commands=['start'])
-def send_welcome(message):
-    msg = bot.reply_to(message, """Hi there, I am Testing bot. Now I am telling for you rules""")
-    bot.send_photo(message.chat.id, ft.map_photo) #фото карты
-    bot.send_photo(message.chat.id, question[0][1]) # тут отправляем первое фото задания
-    bot.send_message(message.chat.id, text = 'What checkpoint is this?')
-    bot.register_next_step_handler(msg, process_one_question)
+def start_ex(message):
+    que_ft = ft.all_photos
+    random.shuffle(que_ft)
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!! не забудь изменить пятёрку на 15
+    global question_foto_ans 
+    question_foto_ans = que_ft[0:5]
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(types.KeyboardButton('/start_5'), types.KeyboardButton('10'), types.KeyboardButton('15'))
+    bot.send_message(message.chat.id, 'Hi! Please, listen rules', reply_markup=markup)
+    bot.send_photo(message.chat.id, ft.map_photo)
 
+#'5'. Начало теста с 5ью вопросами
+@bot.message_handler(commands=['start_5'])
+def start_ex(message):
+    bot.set_state(message.from_user.id, Question.que_1, message.chat.id)
+    bot.send_photo(message.chat.id, question_foto_ans[0][1])
+    bot.send_message(message.chat.id, text = '1. What is checkpoint?')
 
-def process_one_question(message):
-    try:
-        user_id = message.chat.id
-        user = User(message.text)
-        user.user_id = user_id
-        user_dict[user_id] = user
-        bot.send_photo(user_id, question[1][1])
-        # bot.send_message(user_id, text = user.answers)
-        msg = bot.reply_to(message, text = 'What checkpoint is this?')
-        bot.register_next_step_handler(msg, process_two_question)
-    except Exception as e:
-        bot.reply_to(message, '1oooops')
+@bot.message_handler(state=Question.que_1)
+def que_1_get(message):
+    bot.send_photo(message.chat.id, question_foto_ans[1][1])
+    bot.send_message(message.chat.id, text = '2. What is checkpoint?')
+    bot.set_state(message.from_user.id, Question.que_2, message.chat.id)
+    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        data['que_1'] = message.text
+ 
+@bot.message_handler(state=Question.que_2)
+def que_2_get(message):
+    bot.send_photo(message.chat.id, question_foto_ans[2][1])
+    bot.send_message(message.chat.id, "3. What is checkpoint?")
+    bot.set_state(message.from_user.id, Question.que_3, message.chat.id)
+    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        data['que_2'] = message.text
 
+@bot.message_handler(state=Question.que_3)
+def que_3_get(message):
+    bot.send_photo(message.chat.id, question_foto_ans[3][1])
+    bot.send_message(message.chat.id, "4. What is checkpoint?")
+    bot.set_state(message.from_user.id, Question.que_4, message.chat.id)
+    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        data['que_3'] = message.text
 
-def process_two_question(message):
-    # global User
-    try:
-        user_id = message.chat.id
-        user = user_dict[user_id]
-        user = user.append_answers(message.text)
-        user_dict[user_id] = user
-        msg = bot.reply_to(message, 'What checkpoint is this?')
-        bot.send_photo(user_id, question[2][1])
-        # bot.send_message(user_id, user.answers)
-        bot.register_next_step_handler(msg, process_three_question)
-    except Exception as e:
-        bot.reply_to(message, '2oooops')
+@bot.message_handler(state=Question.que_4)
+def que_4_get(message):
+    bot.send_photo(message.chat.id, question_foto_ans[4][1])
+    bot.send_message(message.chat.id, "5. What is checkpoint?")
+    bot.set_state(message.from_user.id, Question.que_5, message.chat.id)
+    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        data['que_4'] = message.text
 
+@bot.message_handler(state=Question.que_5)
+def que_5_get(message):
+    bot.send_message(message.chat.id, "Nice.Let`s look on you answer")
+    bot.set_state(message.from_user.id, Question.que_6, message.chat.id)
+    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        data['que_5'] = message.text
 
-def process_three_question(message):
-    try:
-        user_id = message.chat.id
-        # user = user_dict[user_id]
-        # user.append_answers(message.text)
-        # user_dict[user_id] = user
-        bot.send_message(user_id, text = 'lol')
-    except Exception as e:
-        bot.reply_to(message, '3oooops')
-
+ 
+# result
+@bot.message_handler(state=Question.que_6)
+def ready_for_answer(message):
+    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        msg = ("Ready, take a look:\n<b>"
+               f"1: {data['que_1']}\n"
+               f"2: {data['que_2']}\n"
+               f"3: {data['que_3']}\n"
+               f"4: {data['que_4']}\n"
+               f"5: {data['que_5']}</b>\n"
+               'write: "mark", looking for you results  ')
+        global results
+        results = data
+        bot.send_message(message.chat.id, msg, parse_mode="html")
+    bot.delete_state(message.from_user.id, message.chat.id)
 
 @bot.message_handler(content_types=['text'])
-def lol(message):
-    global n
-    count = 0
-    user_id = message.chat.id
-    user = user_dict[user_id]
-    if message.text == 'результаты':
-        for i in range(n):
-            if user.answers[i] == question[i][2]:
-                count += 1
-        bot.send_message(message.chat.id, text = count )
+def loli(message):
+    if message.text == 'mark':
+        count = 0
+        for i in range(len(list(results.values()))):
+            if question_foto_ans[i][2] == int(list(results.values())[i]): 
+                count+=1
+        bot.send_message(message.chat.id, text = f'результаты: {(count/len(results)) * 100}%')
 
-bot.infinity_polling()
+
+#incorrect number
+@bot.message_handler(state=Question, is_digit=False)
+def age_incorrect(message):
+    bot.send_message(message.chat.id, 'Please enter a number')
+
+# register filters
+
+bot.add_custom_filter(custom_filters.StateFilter(bot))
+bot.add_custom_filter(custom_filters.IsDigitFilter())
+
+bot.infinity_polling(skip_pending=True)
