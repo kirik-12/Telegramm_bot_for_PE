@@ -67,8 +67,29 @@
 # 42 : 38,
 # }
 
-# with open("hello.py", 'w') as file:
-#     for i in range(1,43):
-#         file.write(f'photo_{i}, ')
-#     file.write('\n')
+dict = {
+    43 : 13,
+    44 : 34,
+    45 : 49,
+    46 : 52,
+    47 : 60,
+    48 : 35,
+    49 : 17,
+    50 : 42,
+    51 : 10,
+    52 : 20,
+    53 : 3,
+    54 : 30,
+    55 : 39,
+    56 : 51,
+    57 : 22,
+    58 : 57,
+    59 : 37,
+    60 : 32,
+}
+
+with open("hello.py", 'w') as file:
+    for i in range(43,61):
+        file.write(f'photo_{i}, ')
+    file.write('\n')
     
